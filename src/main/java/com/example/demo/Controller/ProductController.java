@@ -1,10 +1,9 @@
 package com.example.demo.Controller;
 
-import com.example.demo.JPA.ProductRepository;
+import com.example.demo.Service.ProductService;
 import com.example.demo.model.Product;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
@@ -14,42 +13,25 @@ import java.util.*;
 @Tag(name = "Product API")
 public class ProductController {
     @Autowired
-    private ProductRepository productRepository;
+    ProductService productService;
     @GetMapping
     public ResponseEntity<List<Product>> getAllProduct(){
-        return new ResponseEntity<>(productRepository.findAll(), HttpStatus.OK);
+        return productService.getAllProduct();
     }
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product){
-        return new ResponseEntity<>(productRepository.save(product), HttpStatus.CREATED);
+        return productService.createProduct(product);
     }
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable("id") String productID){
-        return productRepository.findById(productID)
-                .map(product -> ResponseEntity.ok().body(product))
-                .orElse(ResponseEntity.notFound().build());
+        return productService.getProduct(productID);
     }
-
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateProduct(@PathVariable("id") String productID, @RequestBody Product request) {
-        Optional<Product> productOptional = productRepository.findById(productID);
-        if(productOptional.isPresent()){
-            Product product = productOptional.get();
-            product.setName(request.getName());
-            product.setPrice(request.getPrice());
-            product.setQuantity(request.getQuantity());
-            return ResponseEntity.noContent().build();
-        }else {
-            return ResponseEntity.notFound().build();
-        }
+        return productService.updateProduct(request, productID);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable("id") String productID) {
-        if(productRepository.existsById(productID)){
-            productRepository.deleteById(productID);
-            return ResponseEntity.noContent().build();
-        }else {
-            return ResponseEntity.notFound().build();
-        }
+        return productService.deleteProduct(productID);
     }
 }

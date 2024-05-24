@@ -1,9 +1,7 @@
-package com.example.demo.JPA;
+package com.example.demo.DAO;
 
 import com.example.demo.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, String> {
 //    List<Product> findAll();
